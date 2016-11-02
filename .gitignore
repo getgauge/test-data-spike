@@ -1,0 +1,5 @@
+node_modules
+.gauge/
+reports
+gauge_bin
+logs
