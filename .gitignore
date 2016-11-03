@@ -3,3 +3,5 @@ node_modules
 reports
 gauge_bin
 logs
+.idea
+.DS_STORE

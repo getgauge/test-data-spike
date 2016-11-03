@@ -3,9 +3,17 @@
 ## Buy popular albums
 
 * Search for all popular albums
-|col1|col2|
-|---|---|
-|row1|row1|
+~~~
+# albums
+## based on number of @tracks
+* less than five
+## based on duration of @tracks
+* M
+* S
+## based on @rating
+* Excellent
+* Good
+~~~
 
 * Select all the albums
 

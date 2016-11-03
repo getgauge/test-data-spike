@@ -3,19 +3,93 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Hello World!</title>
+    <title>Gauge</title>
+    <script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.textcomplete/1.7.3/jquery.textcomplete.min.js"></script>
+    <link href="bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+    html,
+    body {
+        height: 99%;
+    }
+
+    h2 {
+        background: #2A88AD;
+        border-radius: 10px 10px 0 0;
+        -webkit-border-radius: 10px 10px 0 0;
+        -moz-border-radius: 10px 10px 0 0;
+        color: #fff;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
+        font: 400 18px/1.5 "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -moz-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
+        -webkit-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
+        box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
+        border: 1px solid #257C9E;
+        margin: 0px;
+    }
+
+    #run,
+    #savePartition,
+    #loadExample {
+        background: #2A88AD;
+        border-radius: 5px;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        color: #fff;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.12);
+        font: 400 18px/1.5 "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        -moz-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
+        -webkit-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
+        box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.17);
+        border: 1px solid #257C9E;
+        font-size: 15px;
+        margin-right: 20px;
+    }
+    
+    #run:hover,
+    #savePartition:hover,
+    #loadExample:hover {
+        background: #2A6881;
+        -moz-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+        -webkit-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+        box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+        cursor: pointer;
+    }
+
+    textarea {
+        font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New;
+        font-size: 13px;
+        resize: none;
+    }
+    </style>
 </head>
 
 <body>
-    <input id="run" type="button" name="run" value="Run" style="width: 100%">
-    <label style="width: 50%; float: left;  text-align: center;">Specification: </label>
-    <label style="width: 49%; float: right; text-align: center;">Step Implementation: </label>
-    <textarea id="spec" style="width: 50%; height: 400px; float: left; margin-bottom: 5px;"></textarea>
-    <textarea id="lang" style="width: 49%; height: 400px; float: right; margin-bottom: 5px;"></textarea>
-    <textarea style="width: 50%; height: 390px; float: left;"></textarea>
-    <div style="width: 49%; height: 390px; float: right; background: black;color: white; overflow: auto;">
+    <div style="width: 50.4%; float: left;  text-align: center; margin: 0px;">
+        <h2>Specification</h2>
+    </div>
+    <div style="width: 49.4%; float: right; text-align: center; margin: 0px;">
+        <h2>Step Implementation</h2>
+    </div>
+    <textarea id="spec" style="width: 50%; height: 46%; float: left; margin-bottom: 5px;"></textarea>
+    <textarea id="lang" style="width: 49%; height: 46%; float: right; margin-bottom: 5px;"></textarea>
+    <div style="width: 50.4%; float: left;  text-align: center; margin: 0px;">
+        <h2>Partition</h2>
+    </div>
+    <div style="width: 49%; float: right; text-align: center;">
+        <input id="savePartition" type="button" name="savePartition" value="Save Partition" />
+        <input id="run" type="button" name="run" value="Run Spec" />
+    </div>
+    <div style="width: 49%; height: 45%; float: right; background: black;color: white; overflow: auto; margin-top: 2px;">
         <pre id="command_line"></pre>
     </div>
+    <textarea id="partition" style="width: 50%; height: 45%; float: left;"></textarea>
     <script>
     require('./renderer.js')
     </script>
