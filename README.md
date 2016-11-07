@@ -39,6 +39,7 @@ These sections will have predefined content for ease.
 ![Before Run](images/before_run.png)
 
 * Run the given specs and results can be seen on last section. Currently, It replaces the entity text from spec file with the following table
+
    |col1|col2|
    |----|----|
    |row1|row1|
