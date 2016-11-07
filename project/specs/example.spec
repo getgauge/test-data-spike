@@ -3,9 +3,13 @@
 ## Buy popular albums
 
 * Search for all popular albums
-|col1|col2|
-|---|---|
-|row1|row1|
+|AlbumId|Title|ArtistId|
+|-------|-----|--------|
+|19|Chemical Wedding|14|
+|294|Great Performances - Barber's Adagio and Other Romantic Favorites for Strings|228|
+|20|The Best Of Buddy Guy - The Millenium Collection|15|
+|7|Facelift|5|
+|239|War|150|
 
 * Select all the albums
 

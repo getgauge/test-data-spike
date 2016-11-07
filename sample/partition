@@ -1,21 +1,22 @@
 # artists
 
-## based on number of @albums
+## based on number of albums
 * more than five
 * less than five
 
 # albums
 
-## based on number of @tracks
+## based on number of tracks
 * more than five
 * less than five
 
-## based on duration of @tracks
+## based on duration of tracks
 * L
 * M
 * S
 
-## based on @rating
+## based on rating
 * Excellent
 * Good
 * Average
+

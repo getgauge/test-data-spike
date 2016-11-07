@@ -10,9 +10,9 @@ document.getElementById("run").addEventListener("click", e => {
     const lang = document.getElementById("lang").value;
     const partition = document.getElementById("partition").value;
     let spec = document.getElementById("spec").value;
-
-    const patt = /~~~(.|\s)*~~~/;
-    spec = spec.replace(patt, "|col1|col2|\n|---|---|\n|row1|row1|");
+    const pattern = /~~~(.|\s)*~~~/;
+    const text = spec.match(pattern);
+    spec = spec.replace(pattern, convertToTable(getData(text[0])));
     fs.writeFileSync("./project/specs/example.spec", spec);
     fs.writeFileSync("./project/src/test/java/StepImplementation.java", lang);
     fs.writeFileSync("./project/partition.txt", partition);
@@ -69,15 +69,22 @@ function addAutoComplete(entities) {
     }]);
 }
 
-function parseSpecData(text) {
-    const entities = [];
-    const lines = text.trim().split("\n");
+function getData(text) {
+    let entity = "";
+    const lines = text.split("\n");
     for (let line of lines) {
         if (line.trim()[0] === '#') {
-            entities.push({ entity: line.trim(), partition: [] })
-        } else if (line.trim()[0] === '*') {
-            entities[entities.length - 1].partition.push(line.trim())
+            entity = line.trim().substr(1).trim()
+            break;
         }
     }
-    return entities;
+    const data = JSON.parse(fs.readFileSync("data.json"))
+    return data[entity].sort(() => .5 - Math.random()).slice(0, 5);
+}
+
+function convertToTable(data) {
+    const columns = Object.keys(data[0]);
+    console.log(data)
+    const rows = data.map(e => Object.keys(e).map(k => e[k]));
+    return "|" + columns.join("|") + "|\n" + "|" + columns.map(e => "-".repeat(e.length)).join("|") + "|\n" + rows.map(r => "|" + r.join("|") + "|").join("\n");
 }

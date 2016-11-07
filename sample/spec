@@ -5,12 +5,12 @@
 * Search for all popular albums
 ~~~
 # albums
-## based on number of @tracks
+## based on number of tracks
 * less than five
-## based on duration of @tracks
+## based on duration of tracks
 * M
 * S
-## based on @rating
+## based on rating
 * Excellent
 * Good
 ~~~
