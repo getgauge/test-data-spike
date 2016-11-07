@@ -5,11 +5,11 @@
 * Search for all popular albums
 |AlbumId|Title|ArtistId|
 |-------|-----|--------|
-|19|Chemical Wedding|14|
-|294|Great Performances - Barber's Adagio and Other Romantic Favorites for Strings|228|
-|20|The Best Of Buddy Guy - The Millenium Collection|15|
-|7|Facelift|5|
-|239|War|150|
+|332|The Ultimate Relexation Album|262|
+|270|Carry On|205|
+|244|Van Halen|152|
+|64|Slaves And Masters|58|
+|302|Mascagni: Cavalleria Rusticana|236|
 
 * Select all the albums
 

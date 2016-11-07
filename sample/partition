@@ -7,8 +7,8 @@
 # albums
 
 ## based on number of tracks
-* more than five
-* less than five
+* more than <number>
+* less than <number>
 
 ## based on duration of tracks
 * L
