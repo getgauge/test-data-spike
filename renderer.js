@@ -40,7 +40,7 @@ function savePartition() {
             }
             const partitions = entities[entities.length - 1].partitions;
             partitions[partitions.length - 1].conditions.push(line.trim());
-        } else if (line.trim().match(/^___(_)*$/)) {
+        } else if (/^___(_)*$/.test(line.trim())) {
             entities[entities.length - 1].schema = [];
         }
     }
