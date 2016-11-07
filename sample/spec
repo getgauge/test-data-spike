@@ -14,9 +14,8 @@
 * Excellent
 * Good
 ______________
-* AlbumId
-* Title
-* ArtistId
+* Album Name
+* Artist Name
 ~~~
 
 * Select all the albums

@@ -12,6 +12,7 @@ document.getElementById("run").addEventListener("click", e => {
     let spec = document.getElementById("spec").value;
     const pattern = /~~~(.|\s)*~~~/;
     const text = spec.match(pattern);
+
     spec = spec.replace(pattern, convertToTable(getData(text[0])));
     fs.writeFileSync("./project/specs/example.spec", spec);
     fs.writeFileSync("./project/src/test/java/StepImplementation.java", lang);
@@ -81,16 +82,27 @@ function addAutoComplete(entities) {
 }
 
 function getData(text) {
-    let entity = "";
-    const lines = text.split("\n");
-    for (let line of lines) {
-        if (line.trim()[0] === '#') {
-            entity = line.trim().substr(1).trim()
-            break;
-        }
+  const entityName = {};
+  const data=[];
+
+  const lines = text.split("\n");
+  for (let line of lines) {
+      if (line.trim()[0] === '#') {
+          entity = line.trim().substr(1).trim()
+          break;
+      }
+  }
+  if (entity==='albums') {
+      return [{"Artist Name":"Artist1","Album Name":"Album1"},{"Artist Name":"Artist2","Album Name":"Album2"}];
     }
-    const data = JSON.parse(fs.readFileSync("data.json"))
-    return data[entity].sort(() => .5 - Math.random()).slice(0, 5);
+
+  if (entity==='buyer') {
+      return [{"Name":"Buyer1","Address":"Address1"},{"Name":"Buyer1","Address":"Address2"}];
+    }
+
+  if (entity==='seller') {
+      return [{"Name":"Seller1","Company":"Company1"},{"Name":"Seller 2","Company":"Company2"}];
+    }
 }
 
 function convertToTable(data) {

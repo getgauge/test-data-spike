@@ -1,9 +1,3 @@
-# artists
-
-## based on number of albums
-* more than five
-* less than five
-
 # albums
 
 ## based on number of tracks
@@ -20,6 +14,21 @@
 * Good
 * Average
 ______________
-* AlbumId
-* Title
-* ArtistId
+* Album Name
+* Artist Name
+
+# buyer
+## existing or new
+* existing
+* new
+________________
+* Name
+* Address
+
+# seller
+## existing on frequency of sell
+* frequent
+* infrequent
+________________
+* Name
+* Company
