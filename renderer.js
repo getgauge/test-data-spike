@@ -1,10 +1,10 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
 
-
 document.getElementById("spec").value = fs.readFileSync("./sample/spec");;
 document.getElementById("partition").value = fs.readFileSync("./sample/partition");;
 document.getElementById("lang").value = fs.readFileSync("./sample/impl");;
+savePartition();
 
 document.getElementById("run").addEventListener("click", e => {
     const lang = document.getElementById("lang").value;
@@ -23,7 +23,9 @@ document.getElementById("run").addEventListener("click", e => {
     });
 });
 
-document.getElementById("savePartition").addEventListener("click", e => {
+document.getElementById("savePartition").addEventListener("click", savePartition);
+
+function savePartition() {
     const entities = [];
     const lines = document.getElementById("partition").value.trim().split("\n");
     for (let line of lines) {
@@ -32,12 +34,18 @@ document.getElementById("savePartition").addEventListener("click", e => {
         } else if (line.trim()[0] === '#') {
             entities.push({ entity: line.trim(), partitions: [] })
         } else if (line.trim()[0] === '*') {
+            if (entities[entities.length - 1].schema) {
+                entities[entities.length - 1].schema.push(line.trim());
+                continue;
+            }
             const partitions = entities[entities.length - 1].partitions;
             partitions[partitions.length - 1].conditions.push(line.trim());
+        } else if (line.trim().match(/^___(_)*$/)) {
+            entities[entities.length - 1].schema = [];
         }
     }
     addAutoComplete(entities);
-});
+}
 
 function addAutoComplete(entities) {
     $('#spec').textcomplete('destroy');
@@ -48,7 +56,10 @@ function addAutoComplete(entities) {
         let partitions = ""
         for (let p of e.partitions)
             partitions += "\n" + p.partition + "\n" + p.conditions.join("\n");
-        autocompleteText[e.entity] = "~~~\n" + e.entity + "\n" + partitions + "\n~~~\n";
+        let schema = "";
+        if (e.schema)
+            schema = "\n___________________________________\n" + e.schema.join("\n")
+        autocompleteText[e.entity] = "~~~\n" + e.entity + "\n" + partitions + schema + "\n~~~\n";
     });
     $('#spec').textcomplete([{
         match: /@(\w*)$/,

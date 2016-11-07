@@ -5,11 +5,11 @@
 * Search for all popular albums
 |AlbumId|Title|ArtistId|
 |-------|-----|--------|
-|332|The Ultimate Relexation Album|262|
-|270|Carry On|205|
-|244|Van Halen|152|
-|64|Slaves And Masters|58|
-|302|Mascagni: Cavalleria Rusticana|236|
+|24|Afrociberdelia|18|
+|8|Warner 25 Anos|6|
+|19|Chemical Wedding|14|
+|286|Great Opera Choruses|220|
+|283|Haydn: Symphonies 99 - 104|217|
 
 * Select all the albums
 

@@ -13,6 +13,10 @@
 ## based on rating
 * Excellent
 * Good
+______________
+* AlbumId
+* Title
+* ArtistId
 ~~~
 
 * Select all the albums
