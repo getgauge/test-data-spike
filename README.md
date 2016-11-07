@@ -12,7 +12,7 @@ npm start
 
 * This is a sample app where Gauge specs can be run. It comprises of 
 	- `Specification` section where the spec is defined.
-	- `Step Implementation` section where implementations for given specs are written.
+	- `Step Implementation` section where implementations for given specs are written. Currently, it supports only Java.
 	- `Entities` section defines various entities and test data partitions within them.
 These sections will have predefined content for ease.
 
