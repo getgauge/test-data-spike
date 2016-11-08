@@ -96,14 +96,13 @@ function getData(text) {
     if (entity === 'albums') {
         return [{ "Artist Name": "Artist1", "Album Name": "Album1" }, { "Artist Name": "Artist2", "Album Name": "Album2" }];
     }
-
     if (entity === 'buyer') {
         return [{ "Name": "Buyer1", "Address": "Address1" }, { "Name": "Buyer1", "Address": "Address2" }];
     }
-
     if (entity === 'seller') {
         return [{ "Name": "Seller1", "Company": "Company1" }, { "Name": "Seller 2", "Company": "Company2" }];
     }
+    return [];
 }
 
 function convertToTable(data) {
