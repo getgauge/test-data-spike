@@ -82,26 +82,27 @@ function addAutoComplete(entities) {
 }
 
 function getData(text) {
-  const entityName = {};
-  const data=[];
+    const entityName = {};
+    const data = [];
+    let entity = "";
+    const lines = text.split("\n");
 
-  const lines = text.split("\n");
-  for (let line of lines) {
-      if (line.trim()[0] === '#') {
-          entity = line.trim().substr(1).trim()
-          break;
-      }
-  }
-  if (entity==='albums') {
-      return [{"Artist Name":"Artist1","Album Name":"Album1"},{"Artist Name":"Artist2","Album Name":"Album2"}];
+    for (let line of lines) {
+        if (line.trim()[0] === '#') {
+            entity = line.trim().substr(1).trim()
+            break;
+        }
+    }
+    if (entity === 'albums') {
+        return [{ "Artist Name": "Artist1", "Album Name": "Album1" }, { "Artist Name": "Artist2", "Album Name": "Album2" }];
     }
 
-  if (entity==='buyer') {
-      return [{"Name":"Buyer1","Address":"Address1"},{"Name":"Buyer1","Address":"Address2"}];
+    if (entity === 'buyer') {
+        return [{ "Name": "Buyer1", "Address": "Address1" }, { "Name": "Buyer1", "Address": "Address2" }];
     }
 
-  if (entity==='seller') {
-      return [{"Name":"Seller1","Company":"Company1"},{"Name":"Seller 2","Company":"Company2"}];
+    if (entity === 'seller') {
+        return [{ "Name": "Seller1", "Company": "Company1" }, { "Name": "Seller 2", "Company": "Company2" }];
     }
 }
 
