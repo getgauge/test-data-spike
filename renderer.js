@@ -15,7 +15,7 @@ document.getElementById("run").addEventListener("click", e => {
 
     spec = spec.replace(pattern, convertToTable(getData(text[0])));
     fs.writeFileSync("./project/specs/example.spec", spec);
-    fs.writeFileSync("./project/src/test/java/StepImplementation.java", lang);
+    fs.writeFileSync("./project/tests/step_implementation.js", lang);
     fs.writeFileSync("./project/partition.txt", partition);
 
     exec('gauge --simple-console --verbose specs/', { cwd: './project' }, (error, stdout, stderr) => {

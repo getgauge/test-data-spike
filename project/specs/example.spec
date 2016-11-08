@@ -3,10 +3,10 @@
 ## Buy popular albums
 
 * Search for all popular albums
-|Name|Address|
-|----|-------|
-|Buyer1|Address1|
-|Buyer1|Address2|
+|Artist Name|Album Name|
+|-----------|----------|
+|Artist1|Album1|
+|Artist2|Album2|
 
 * Select all the albums
 
