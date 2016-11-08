@@ -18,8 +18,9 @@
     body {
         height: 99%;
     }
-
-    h2 {
+    
+    h2,
+    h3 {
         background: #2A88AD;
         border-radius: 10px 10px 0 0;
         -webkit-border-radius: 10px 10px 0 0;
@@ -33,7 +34,11 @@
         border: 1px solid #257C9E;
         margin: 0px;
     }
-
+    
+    h3 {
+        font: 400 16px/1.5 "Roboto Slab", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+    
     #run,
     #savePartition,
     #loadExample {
@@ -61,7 +66,15 @@
         box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
         cursor: pointer;
     }
-
+    
+    #partition_label:hover,
+    #step_label:hover {
+        -moz-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+        -webkit-box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+        box-shadow: inset 0px 2px 2px 0px rgba(255, 255, 255, 0.28);
+        cursor: pointer;
+    }
+    
     textarea {
         font-family: Consolas, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New;
         font-size: 13px;
@@ -74,11 +87,15 @@
     <div style="width: 50.4%; float: left;  text-align: center; margin: 0px;">
         <h2>Specification</h2>
     </div>
-    <div style="width: 49.4%; float: right; text-align: center; margin: 0px;">
-        <h2>Step Implementation</h2>
+    <div id="step_label" style="width: 24%; float: left; text-align: center; margin: 0px 5px 0px 5px;" onclick="showStepImpl()">
+        <h2> Step Implementation </h2>
+    </div>
+    <div id="partition_label" style="width: 24.7%; float: right; text-align: center; margin: 0px;" onclick="showPartitionImpl()">
+        <h3>Partition Implementation</h3>
     </div>
     <textarea id="spec" style="width: 50%; height: 46%; float: left; margin-bottom: 5px;"></textarea>
     <textarea id="lang" style="width: 49%; height: 46%; float: right; margin-bottom: 5px;"></textarea>
+    <textarea id="partition_impl" style="width: 49%; height: 46%; float: right; margin-bottom: 0px;" hidden=""></textarea>
     <div style="width: 50.4%; float: left;  text-align: center; margin: 0px;">
         <h2>Entities</h2>
     </div>
@@ -90,6 +107,21 @@
         <pre id="command_line"></pre>
     </div>
     <textarea id="partition" style="width: 50%; height: 45%; float: left;"></textarea>
+    <script type="text/javascript">
+    function showStepImpl() {
+        document.getElementById("lang").hidden = false;
+        document.getElementById("step_label").innerHTML = "<h2> Step Implementation </h2>";
+        document.getElementById("partition_impl").hidden = true;
+        document.getElementById("partition_label").innerHTML = "<h3>Partition Implementation</h3>";
+    }
+
+    function showPartitionImpl() {
+        document.getElementById("lang").hidden = true;
+        document.getElementById("step_label").innerHTML = "<h3> Step Implementation </h3>";
+        document.getElementById("partition_impl").hidden = false;
+        document.getElementById("partition_label").innerHTML = "<h2>Partition Implementation</h2>";
+    }
+    </script>
     <script>
     require('./renderer.js')
     </script>

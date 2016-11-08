@@ -3,5 +3,8 @@ node_modules
 reports
 gauge_bin
 logs
+project/specs/example.spec
+project/tests/step_implementation.js
+project/partition_impl.js
 .idea
 .DS_STORE

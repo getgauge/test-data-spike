@@ -1,19 +1,31 @@
 const exec = require('child_process').exec;
 const fs = require('fs');
+const path = require('path');
 
-document.getElementById("spec").value = fs.readFileSync("./sample/spec");;
-document.getElementById("partition").value = fs.readFileSync("./sample/partition");;
-document.getElementById("lang").value = fs.readFileSync("./sample/impl");;
+const template = `
+const gauge = {partitions: {}};
+exports.gauge = gauge;
+
+gauge.partition = (text, callback) => {
+    gauge.partitions[text.replace(/<.*>/g, "{}")] = callback;
+}
+`
+
+document.getElementById("spec").value = fs.readFileSync("./sample/spec");
+document.getElementById("partition").value = fs.readFileSync("./sample/partition");
+document.getElementById("partition_impl").value = fs.readFileSync("./sample/partition_impl.js");
+document.getElementById("lang").value = fs.readFileSync("./sample/impl");
 savePartition();
 
 document.getElementById("run").addEventListener("click", e => {
     const lang = document.getElementById("lang").value;
     const partition = document.getElementById("partition").value;
+    const partition_impl = document.getElementById("partition_impl").value;
     let spec = document.getElementById("spec").value;
     const pattern = /~~~(.|\s)*~~~/;
     const text = spec.match(pattern);
 
-    spec = spec.replace(pattern, convertToTable(getData(text[0])));
+    spec = spec.replace(pattern, convertToTable(getData(text[0], partition_impl)));
     fs.writeFileSync("./project/specs/example.spec", spec);
     fs.writeFileSync("./project/tests/step_implementation.js", lang);
     fs.writeFileSync("./project/partition.txt", partition);
@@ -81,33 +93,42 @@ function addAutoComplete(entities) {
     }]);
 }
 
-function getData(text) {
-    const entityName = {};
-    const data = [];
-    let entity = "";
+function getData(text, partition_impl) {
+    let entity = {};
     const lines = text.split("\n");
-
+    let currentPartition = "";
     for (let line of lines) {
-        if (line.trim()[0] === '#') {
-            entity = line.trim().substr(1).trim()
-            break;
+        if (line.trim().substr(0, 2) === '##') {
+            currentPartition = line.trim().substr(2).trim();
+        } else if (line.trim()[0] === '#') {
+            entity = { entity: line.trim().substr(1).trim(), partitions: [] };
+        } else if (line.trim()[0] === '*') {
+            if (entity.schema) {
+                entity.schema.push(line.trim());
+                continue;
+            }
+            entity.partitions.push(entity.entity + " - " + currentPartition + " - " + line.trim().substr(1).trim());
+        } else if (/^___(_)*$/.test(line.trim())) {
+            entity.schema = [];
         }
     }
-    if (entity === 'albums') {
-        return [{ "Artist Name": "Artist1", "Album Name": "Album1" }, { "Artist Name": "Artist2", "Album Name": "Album2" }];
-    }
-    if (entity === 'buyer') {
-        return [{ "Name": "Buyer1", "Address": "Address1" }, { "Name": "Buyer1", "Address": "Address2" }];
-    }
-    if (entity === 'seller') {
-        return [{ "Name": "Seller1", "Company": "Company1" }, { "Name": "Seller 2", "Company": "Company2" }];
-    }
-    return [];
+    fs.writeFileSync('./project/partition_impl.js', template + partition_impl);
+    delete require.cache[path.resolve('./project/partition_impl.js')]
+    const gauge = require('./project/partition_impl.js').gauge
+    let data = [];
+    entity.partitions.forEach(e => {
+        let matches = [];
+        if (/".*"/g.test(e)) {
+            matches = e.match(/".*"/g).map(a => a.slice(1, -1));
+            e = e.replace(/".*"/g, "{}");
+        }
+        data = data.concat(gauge.partitions[e].apply(this, matches));
+    });
+    return data;
 }
 
 function convertToTable(data) {
     const columns = Object.keys(data[0]);
-    console.log(data)
     const rows = data.map(e => Object.keys(e).map(k => e[k]));
     return "|" + columns.join("|") + "|\n" + "|" + columns.map(e => "-".repeat(e.length)).join("|") + "|\n" + rows.map(r => "|" + r.join("|") + "|").join("\n");
 }
