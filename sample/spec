@@ -1,24 +1,24 @@
 # Digital Media Store
 
+## Place order successfully
+
+* Place the following order
+```
+# order
+## albums with less than "5" tracks and medium duration
+## new buyer
+```
+
+* Verify success message is shown
+
 ## Buy popular albums
 
 * Search for all popular albums
-~~~
+```
 # albums
-## based on number of tracks
-* less than "5"
-## based on duration of tracks
-* M
-* S
-## based on rating
-* Excellent
-* Good
-______________
-* Album Name
-* Artist Name
-~~~
-
-* Select all the albums
+## more than "5" number of tracks
+## with rating - Excellent
+```
 
 * Add all the selected albums to cart
 

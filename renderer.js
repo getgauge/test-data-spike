@@ -10,6 +10,7 @@ gauge.partition = (text, callback) => {
     gauge.partitions[text.replace(/<.*>/g, "{}")] = callback;
 }
 `
+let entities = [];
 
 document.getElementById("spec").value = fs.readFileSync("./sample/spec");
 document.getElementById("partition").value = fs.readFileSync("./sample/partition");
@@ -22,10 +23,12 @@ document.getElementById("run").addEventListener("click", e => {
     const partition = document.getElementById("partition").value;
     const partition_impl = document.getElementById("partition_impl").value;
     let spec = document.getElementById("spec").value;
-    const pattern = /~~~(.|\s)*~~~/;
+    const pattern = /```(.|\n)*?```/g;
     const text = spec.match(pattern);
-
-    spec = spec.replace(pattern, convertToTable(getData(text[0], partition_impl)));
+    text.forEach(t => {
+        spec = spec.replace(t, convertToTable(getData(t, partition_impl)));
+    });
+    
     fs.writeFileSync("./project/specs/example.spec", spec);
     fs.writeFileSync("./project/tests/step_implementation.js", lang);
     fs.writeFileSync("./project/partition.txt", partition);
@@ -39,40 +42,52 @@ document.getElementById("run").addEventListener("click", e => {
 document.getElementById("savePartition").addEventListener("click", savePartition);
 
 function savePartition() {
-    const entities = [];
+    entities = [];
     const lines = document.getElementById("partition").value.trim().split("\n");
+    let currentPartition = "";
     for (let line of lines) {
         if (line.trim().substr(0, 2) === '##') {
-            entities[entities.length - 1].partitions.push({ partition: line.trim(), conditions: [] })
+            currentPartition = line.trim().substr(2).trim();
+            entities[entities.length - 1].partitions.push({ partition: currentPartition });
         } else if (line.trim()[0] === '#') {
-            entities.push({ entity: line.trim(), partitions: [] })
+            entities.push({ entity: line.trim().substr(1).trim(), partitions: [] })
         } else if (line.trim()[0] === '*') {
             if (entities[entities.length - 1].schema) {
                 entities[entities.length - 1].schema.push(line.trim());
                 continue;
             }
-            const partitions = entities[entities.length - 1].partitions;
-            partitions[partitions.length - 1].conditions.push(line.trim());
+            var index = entities[entities.length - 1].partitions.map(p => p.partition).indexOf(currentPartition);
+            if (index != -1)
+                entities[entities.length - 1].partitions.splice(index, 1);
+            if (line.trim().substr(1).trim()[0] === "@") {
+                let partitions = entities[entities.length - 1].partitions;
+                if (partitions.length > 0 && partitions[partitions.length - 1].partition === currentPartition) {
+                    partitions[partitions.length - 1].conditions.push(line.trim().substr(1).trim().substr(1));
+                } else {
+                    partitions.push({ partition: currentPartition, conditions: [line.trim().substr(1).trim().substr(1)] });
+                }
+            } else {
+                entities[entities.length - 1].partitions.push({ partition: currentPartition + " - " + line.trim().substr(1).trim() });
+            }
         } else if (/^___(_)*$/.test(line.trim())) {
             entities[entities.length - 1].schema = [];
         }
     }
-    addAutoComplete(entities);
+    addAutoComplete();
 }
 
-function addAutoComplete(entities) {
+function addAutoComplete() {
     $('#spec').textcomplete('destroy');
     const elements = entities.map(e => e.entity);
-    entities.map(e => e.entity);
     const autocompleteText = {};
     entities.forEach(e => {
         let partitions = ""
         for (let p of e.partitions)
-            partitions += "\n" + p.partition + "\n" + p.conditions.join("\n");
+            partitions += "\n" + "## " + p.partition;
         let schema = "";
         if (e.schema)
             schema = "\n___________________________________\n" + e.schema.join("\n")
-        autocompleteText[e.entity] = "~~~\n" + e.entity + "\n" + partitions + schema + "\n~~~\n";
+        autocompleteText[e.entity] = "```\n# " + e.entity + "\n" + partitions + schema + "\n```\n";
     });
     $('#spec').textcomplete([{
         match: /@(\w*)$/,
@@ -94,37 +109,59 @@ function addAutoComplete(entities) {
 }
 
 function getData(text, partition_impl) {
-    let entity = {};
-    const lines = text.split("\n");
-    let currentPartition = "";
-    for (let line of lines) {
-        if (line.trim().substr(0, 2) === '##') {
-            currentPartition = line.trim().substr(2).trim();
-        } else if (line.trim()[0] === '#') {
-            entity = { entity: line.trim().substr(1).trim(), partitions: [] };
-        } else if (line.trim()[0] === '*') {
-            if (entity.schema) {
-                entity.schema.push(line.trim());
-                continue;
-            }
-            entity.partitions.push(entity.entity + " - " + currentPartition + " - " + line.trim().substr(1).trim());
-        } else if (/^___(_)*$/.test(line.trim())) {
-            entity.schema = [];
-        }
-    }
+    let specEntity = getEntityInSpec(text);
     fs.writeFileSync('./project/partition_impl.js', template + partition_impl);
-    delete require.cache[path.resolve('./project/partition_impl.js')]
-    const gauge = require('./project/partition_impl.js').gauge
+    delete require.cache[path.resolve('./project/partition_impl.js')];
+    const gauge = require('./project/partition_impl.js').gauge;
     let data = [];
-    entity.partitions.forEach(e => {
+    const entityDefinition = entities.filter((e) => e.entity.indexOf(specEntity.entity) != -1)[0];
+
+    specEntity.partitions.forEach(e => {
+        let partition = entityDefinition.partitions.filter(d => {
+            return replaceArgs(d.partition) == replaceArgs(e)
+        })[0];
+
+        if (partition.conditions) {
+            partition.conditions.forEach(c => {
+                let matches = [];
+                if (/".*"/g.test(c)) {
+                    matches = c.match(/".*"/g).map(a => a.slice(1, -1));
+                    c = c.replace(/".*"/g, "{}");
+                }
+                data = data.concat(gauge.partitions[c].apply(this, matches));
+            });
+            return;
+        }
+
         let matches = [];
         if (/".*"/g.test(e)) {
             matches = e.match(/".*"/g).map(a => a.slice(1, -1));
             e = e.replace(/".*"/g, "{}");
         }
-        data = data.concat(gauge.partitions[e].apply(this, matches));
+        data = data.concat(gauge.partitions[specEntity.entity + " - " + e].apply(this, matches));
     });
     return data;
+}
+
+function replaceArgs(text) {
+    return text.replace(/".*"/g, "{}").replace(/<.*>/g, "{}");
+}
+
+function getEntityInSpec(text) {
+    let entity = {};
+    const lines = text.split("\n");
+    for (let line of lines) {
+        if (line.trim().substr(0, 2) === '##') {
+            entity.partitions.push(line.trim().substr(2).trim());
+        } else if (line.trim()[0] === '#') {
+            entity = { entity: line.trim().substr(1).trim(), partitions: [] };
+        } else if (line.trim()[0] === '*') {
+            entity.schema.push(line.trim());
+        } else if (/^___(_)*$/.test(line.trim())) {
+            entity.schema = [];
+        }
+    }
+    return entity;
 }
 
 function convertToTable(data) {

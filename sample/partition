@@ -1,34 +1,41 @@
+# order
+
+## albums with small duration of tracks
+* @albums - with "S" duration  of tracks
+
+## albums with less than <number> tracks and medium duration
+* @albums - less than <number> number of tracks
+* @albums - with "M" duration  of tracks
+
+## new buyer
+* @buyer - new
+
+## existing buyer
+* @buyer - existing
+
 # albums
 
-## based on number of tracks
-* more than <number>
-* less than <number>
-
-## based on duration of tracks
-* L
-* M
-* S
-
-## based on rating
+## more than <number> number of tracks
+## less than <number> number of tracks
+## with <duration> duration  of tracks
+## with rating
 * Excellent
 * Good
-* Average
+* Bad
 ______________
 * Album Name
 * Artist Name
 
 # buyer
-## existing or new
-* existing
-* new
+## existing
+## new
 ________________
 * Name
 * Address
 
 # seller
-## existing on frequency of sell
-* frequent
-* infrequent
+## with frequent sells
+## with infrequent sells
 ________________
 * Name
 * Company
