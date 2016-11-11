@@ -81,18 +81,34 @@ function getEntities(text) {
     return entities;
 }
 
+function getAutoCompleteTextForEntity(e) {
+    let partitions = ""
+    for (let p of e.partitions)
+        partitions += "\n" + "## " + p.partition;
+    let schema = "";
+    if (e.schema)
+        schema = "\n___________________________________\n" + e.schema.join("\n")
+    return "```\n# " + e.entity + "\n" + partitions + schema + "\n```\n";
+}
+
 function addAutoComplete() {
     $('#spec').textcomplete('destroy');
     const elements = entities.map(e => e.entity);
     const autocompleteText = {};
     entities.forEach(e => {
-        let partitions = ""
-        for (let p of e.partitions)
-            partitions += "\n" + "## " + p.partition;
-        let schema = "";
-        if (e.schema)
-            schema = "\n___________________________________\n" + e.schema.join("\n")
-        autocompleteText[e.entity] = "```\n# " + e.entity + "\n" + partitions + schema + "\n```\n";
+        if (e.partitions[0].partition.trim()[0] == "@") { // complex entity
+            let text = "";
+            e.partitions.forEach(subEntity => {
+                entities.forEach(e => {
+                    if (e.entity === subEntity.partition.trim().substr(1)) {
+                        text += getAutoCompleteTextForEntity(e).replace(/##/g, "*").replace(/#/g, "##").replace(/```/g, "");
+                    }
+                });
+            });
+            autocompleteText[e.entity] = "```\n# " + e.entity + "\n" + text + "```\n";
+        } else {
+            autocompleteText[e.entity] = getAutoCompleteTextForEntity(e);
+        }
     });
     $('#spec').textcomplete([{
         match: /@(\w*)$/,
@@ -128,11 +144,11 @@ function getData(text, partition_impl) {
             e.partition = e.partition.replace(/".*"/g, "{}");
         }
         try {
-            data = data.concat(gauge.partitions[e.partition].apply(this, matches));    
+            data = data.concat(gauge.partitions[e.partition].apply(this, matches));
         } catch (ex) {
             data = data.concat(gauge.partitions[specEntity.entity + " - " + e.partition].apply(this, matches));
         }
-        
+
     });
     return data;
 }
@@ -156,11 +172,10 @@ function convertToTable(data) {
     if (isComplexEntity) {
         let complexEntity = {}
         data.forEach(d => {
-            if (!complexEntity[Object.keys(d).sort()])   complexEntity[Object.keys(d).sort()] = [];
+            if (!complexEntity[Object.keys(d).sort()]) complexEntity[Object.keys(d).sort()] = [];
             complexEntity[Object.keys(d).sort()].push(d);
         })
         data = Object.keys(complexEntity).map(k => complexEntity[k])
-        console.log(data)
         let rows = allPossibleCases(data);
         return "|" + columns.join("|") + "|\n" + "|" + columns.map(e => "-".repeat(e.length)).join("|") + "|\n" + rows.map(r => "|" + columns.map(c => r[c]).join("|") + "|").join("\n");
     } else {
