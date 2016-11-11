@@ -5,8 +5,14 @@
 * Place the following order
 ```
 # order
-## albums with less than "5" tracks and medium duration
-## new buyer
+
+## albums
+* based on number of tracks - more than "6"
+* based on duration  of tracks - L
+* with rating - Excellent
+
+## buyer
+* existing
 ```
 
 * Verify success message is shown
@@ -16,10 +22,9 @@
 * Search for all popular albums
 ```
 # albums
-## more than "5" number of tracks
+## based on number of tracks - more than "5"
 ## with rating - Excellent
 ```
 
 * Add all the selected albums to cart
-
 * Checkout

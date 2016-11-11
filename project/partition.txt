@@ -1,23 +1,19 @@
 # order
 
-## albums with small duration of tracks
-* @albums - with "S" duration  of tracks
-
-## albums with less than <number> tracks and medium duration
-* @albums - less than <number> number of tracks
-* @albums - with "M" duration  of tracks
-
-## new buyer
-* @buyer - new
-
-## existing buyer
-* @buyer - existing
+## @albums
+## @buyer
 
 # albums
 
-## more than <number> number of tracks
-## less than <number> number of tracks
-## with <duration> duration  of tracks
+## based on number of tracks
+* more than <number>
+* less than <number>
+
+## based on duration  of tracks
+* L
+* M
+* S
+
 ## with rating
 * Excellent
 * Good

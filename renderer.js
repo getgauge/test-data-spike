@@ -41,9 +41,14 @@ document.getElementById("run").addEventListener("click", e => {
 
 document.getElementById("savePartition").addEventListener("click", savePartition);
 
-function savePartition() {
-    entities = [];
-    const lines = document.getElementById("partition").value.trim().split("\n");
+function savePartition(text) {
+    entities = getEntities(document.getElementById("partition").value)
+    addAutoComplete();
+}
+
+function getEntities(text) {
+    let lines = text.trim().split("\n");
+    let entities = [];
     let currentPartition = "";
     for (let line of lines) {
         if (line.trim().substr(0, 2) === '##') {
@@ -73,7 +78,7 @@ function savePartition() {
             entities[entities.length - 1].schema = [];
         }
     }
-    addAutoComplete();
+    return entities;
 }
 
 function addAutoComplete() {
@@ -117,53 +122,23 @@ function getData(text, partition_impl) {
     const entityDefinition = entities.filter((e) => e.entity.indexOf(specEntity.entity) != -1)[0];
 
     specEntity.partitions.forEach(e => {
-        let partition = entityDefinition.partitions.filter(d => {
-            return replaceArgs(d.partition) == replaceArgs(e)
-        })[0];
-
-        if (partition.conditions) {
-            let partitionData = [];
-            partition.conditions.forEach(c => {
-                let matches = [];
-                if (/".*"/g.test(c)) {
-                    matches = c.match(/".*"/g).map(a => a.slice(1, -1));
-                    c = c.replace(/".*"/g, "{}");
-                }
-                partitionData = partitionData.concat(gauge.partitions[c].apply(this, matches));
-            });
-            data.push(partitionData);
-            return;
-        }
-
         let matches = [];
-        if (/".*"/g.test(e)) {
-            matches = e.match(/".*"/g).map(a => a.slice(1, -1));
-            e = e.replace(/".*"/g, "{}");
+        if (/".*"/g.test(e.partition)) {
+            matches = e.partition.match(/".*"/g).map(a => a.slice(1, -1));
+            e.partition = e.partition.replace(/".*"/g, "{}");
         }
-        data = data.concat(gauge.partitions[specEntity.entity + " - " + e].apply(this, matches));
+        try {
+            data = data.concat(gauge.partitions[e.partition].apply(this, matches));    
+        } catch (ex) {
+            data = data.concat(gauge.partitions[specEntity.entity + " - " + e.partition].apply(this, matches));
+        }
+        
     });
     return data;
 }
 
-function replaceArgs(text) {
-    return text.replace(/".*"/g, "{}").replace(/<.*>/g, "{}");
-}
-
 function getEntityInSpec(text) {
-    let entity = {};
-    const lines = text.split("\n");
-    for (let line of lines) {
-        if (line.trim().substr(0, 2) === '##') {
-            entity.partitions.push(line.trim().substr(2).trim());
-        } else if (line.trim()[0] === '#') {
-            entity = { entity: line.trim().substr(1).trim(), partitions: [] };
-        } else if (line.trim()[0] === '*') {
-            entity.schema.push(line.trim());
-        } else if (/^___(_)*$/.test(line.trim())) {
-            entity.schema = [];
-        }
-    }
-    return entity;
+    return getEntities(text)[0];
 }
 
 function convertToTable(data) {
@@ -175,8 +150,17 @@ function convertToTable(data) {
             Object.keys(e).forEach(k => columns[k] = true);
     });
     columns = Object.keys(columns);
-    const isComplexEntity = data.some(e => e instanceof Array);
+    let isComplexEntity = false;
+    for (let e of data)
+        if (Object.keys(e) != columns) isComplexEntity = true;
     if (isComplexEntity) {
+        let complexEntity = {}
+        data.forEach(d => {
+            if (!complexEntity[Object.keys(d).sort()])   complexEntity[Object.keys(d).sort()] = [];
+            complexEntity[Object.keys(d).sort()].push(d);
+        })
+        data = Object.keys(complexEntity).map(k => complexEntity[k])
+        console.log(data)
         let rows = allPossibleCases(data);
         return "|" + columns.join("|") + "|\n" + "|" + columns.map(e => "-".repeat(e.length)).join("|") + "|\n" + rows.map(r => "|" + columns.map(c => r[c]).join("|") + "|").join("\n");
     } else {
