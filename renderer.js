@@ -28,7 +28,7 @@ document.getElementById("run").addEventListener("click", e => {
     text.forEach(t => {
         spec = spec.replace(t, convertToTable(getData(t, partition_impl)));
     });
-    
+
     fs.writeFileSync("./project/specs/example.spec", spec);
     fs.writeFileSync("./project/tests/step_implementation.js", lang);
     fs.writeFileSync("./project/partition.txt", partition);
@@ -122,14 +122,16 @@ function getData(text, partition_impl) {
         })[0];
 
         if (partition.conditions) {
+            let partitionData = [];
             partition.conditions.forEach(c => {
                 let matches = [];
                 if (/".*"/g.test(c)) {
                     matches = c.match(/".*"/g).map(a => a.slice(1, -1));
                     c = c.replace(/".*"/g, "{}");
                 }
-                data = data.concat(gauge.partitions[c].apply(this, matches));
+                partitionData = partitionData.concat(gauge.partitions[c].apply(this, matches));
             });
+            data.push(partitionData);
             return;
         }
 
@@ -165,7 +167,35 @@ function getEntityInSpec(text) {
 }
 
 function convertToTable(data) {
-    const columns = Object.keys(data[0]);
-    const rows = data.map(e => Object.keys(e).map(k => e[k]));
-    return "|" + columns.join("|") + "|\n" + "|" + columns.map(e => "-".repeat(e.length)).join("|") + "|\n" + rows.map(r => "|" + r.join("|") + "|").join("\n");
+    let columns = {};
+    data.forEach(e => {
+        if (e instanceof Array)
+            e.forEach(o => Object.keys(o).forEach(k => columns[k] = true));
+        else
+            Object.keys(e).forEach(k => columns[k] = true);
+    });
+    columns = Object.keys(columns);
+    const isComplexEntity = data.some(e => e instanceof Array);
+    if (isComplexEntity) {
+        let rows = allPossibleCases(data);
+        return "|" + columns.join("|") + "|\n" + "|" + columns.map(e => "-".repeat(e.length)).join("|") + "|\n" + rows.map(r => "|" + columns.map(c => r[c]).join("|") + "|").join("\n");
+    } else {
+        let rows = data.map(e => Object.keys(e).map(k => e[k]));
+        return "|" + columns.join("|") + "|\n" + "|" + columns.map(e => "-".repeat(e.length)).join("|") + "|\n" + rows.map(r => "|" + r.join("|") + "|").join("\n");
+    }
+}
+
+function allPossibleCases(arr) {
+    if (arr.length > 1) {
+        let lastElements = allPossibleCases(arr.slice(1));
+        let result = [];
+        lastElements.forEach(e => {
+            arr[0].forEach(a => {
+                let eCopy = JSON.parse(JSON.stringify(e))
+                result.push(Object.assign(eCopy, a));
+            });
+        });
+        return result;
+    }
+    return arr[0];
 }

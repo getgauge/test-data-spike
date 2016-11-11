@@ -3,11 +3,12 @@
 ## Place order successfully
 
 * Place the following order
-|Artist Name|Album Name|
-|-----------|----------|
-|AC/DC|Let There Be Rock|
-|Accept|Balls to the Wall|
-|Bob|Chennai|
+|Artist Name|Album Name|Name|Address|
+|-----------|----------|----|-------|
+|AC/DC|Let There Be Rock|Bob|Chennai|
+|Accept|Balls to the Wall|Bob|Chennai|
+|AC/DC|Let There Be Rock|Aproova|Anekal|
+|Accept|Balls to the Wall|Aproova|Anekal|
 
 * Verify success message is shown
 
